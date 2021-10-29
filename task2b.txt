@@ -1,0 +1,30 @@
+What is this phenomenon called? Give one example of a situation where it can be
+problematic.
+
+This is called non-determinism.
+
+Let's take the bank example. We have two threads.
+
+Thread 1 will read your current balance and then remove 2$
+
+Thread 2 will read your current balance and then add 3$
+
+All in all these two threads equals to four operations.
+
+t1: read balance
+t1: write balance - 2
+t2: read balance
+t2: write balance + 3
+
+Leaving you with a balance of +1$
+
+Since the order of operations is nondeterministisc we don't know which order they come in.
+
+In a worst case senario they could end up in this order:
+
+t1: read balance
+t2: read balance
+t2: write balance + 3
+t1: write balance - 2
+
+This would leave you with a balance of -2 instead of +1 which would be bad.
