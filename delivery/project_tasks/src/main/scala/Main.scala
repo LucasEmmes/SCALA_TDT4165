@@ -1,5 +1,7 @@
 import scala.concurrent.Future
 import scala.concurrent.Await
+import scala.concurrent.duration._
+import scala.concurrent._
 
 
 object Main extends App {
@@ -80,46 +82,20 @@ object Main extends App {
         t
     }
 
-    // var a:Array[Int] = generate50()
-    // println(sum_array(a))
-    // println(sum_recursive(a))
+    var a:Array[Int] = generate50()
+    println(sum_array(a))
+    println(sum_recursive(a))
   
-    // println(fib(15))
+    println(fib(15))
 
-    // var t1 = create_thread(increaseCounter)
-    // var t2 = create_thread(increaseCounter)
-    // var t3 = create_thread(printCounter)
+    var t1 = create_thread(increaseCounter)
+    var t2 = create_thread(increaseCounter)
+    var t3 = create_thread(printCounter)
     
-    // t1.start()
-    // t2.start()
-    // Thread.sleep(1000)
-    // t3.start()
+    t1.start()
+    t2.start()
+    Thread.sleep(1000)
+    t3.start()
 
 
-}
-
-object FirstObj {
-  lazy val initialState = 42
-  lazy val start = SecondObj.initialState
-}
-
-object SecondObj {
-  lazy val initialState = FirstObj.initialState
-}
-
-object Deadlock extends App {
-    implicit val ec = ExecutionContext.global
-
-    def run = {
-        val result = Future.sequence(Seq(
-        Future {
-            FirstObj.start
-        },
-        Future {
-            SecondObj.initialState
-        }
-    ))
-    Await.result(result, 10.second)
-    }
-    run
 }
