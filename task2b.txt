@@ -28,3 +28,17 @@ t2: write balance + 3
 t1: write balance - 2
 
 This would leave you with a balance of -2 instead of +1 which would be bad.
+
+2d) what is a deadlock?
+A lock is when an object only can be accessed by one thead at a time.
+When a thread is acessing the object no other thread is able to access it. We say that the thread has aquired the lock.
+When a thread want to access an object that is locked (accessed by an other thread) it will stall until this lock is released.
+
+When two threads are waiting for the other to release its locks we reach a deadlock.
+
+How to prevent deadlocks?
+(Don't do concurrency)
+Threre are probably several ways, but one way is to establish a total order when acquiring locks.
+This way threads will try to aquire the same locks first.
+Meaning that if a thread has to wait for a lock to be released, 
+it cannot have aquired a lock the blocking thread is waiting for.

@@ -82,11 +82,7 @@ object Main extends App {
         t
     }
 
-    var a:Array[Int] = generate50()
-    println(sum_array(a))
-    println(sum_recursive(a))
-  
-    println(fib(15))
+
 
     var t1 = create_thread(increaseCounter)
     var t2 = create_thread(increaseCounter)
