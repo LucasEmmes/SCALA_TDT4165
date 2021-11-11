@@ -19,46 +19,67 @@ class Bank(val allowedAttempts: Integer = 3) {
         // spawn a thread that calls processTransactions
         val transaction = new Transaction(this.transactionsQueue, this.processedTransactions, from, to, amount, this.allowedAttempts)
         transactionsQueue.push(transaction)
-        val t = create_thread(this.processTransactions)
+
+        val t = create_thread(() => {
+            if (from.uid < to.uid) {
+                from.synchronized { to.synchronized{
+                    executeTransaction(transaction)
+                }}
+            } else {
+                to.synchronized { from.synchronized{
+                    executeTransaction(transaction)
+                }}
+            }
+        })
         t.start()
+        processTransactions()
+    }
+
+
+    private def executeTransaction(transaction: Transaction):Unit = {
+        println("withdrawing from from")
+        val result = transaction.from.withdraw(transaction.amount)
+        println("has withdrawn from fom")
+        
+        result match {
+            case Left(()) => {
+                println("depositing to to")
+                val result2 = transaction.to.deposit(transaction.amount)
+                println("deposited to to")
+
+                result2 match {
+                    case Left(()) => {
+                        transaction.status = TransactionStatus.SUCCESS
+                        }
+
+                    case Right(string) => {
+                        transaction.status = TransactionStatus.FAILED
+                    }
+                    case _ => println("shits fack fam (TM)")
+                }
+            }
+
+            case Right(string) => {
+                transaction.status = TransactionStatus.FAILED
+            }
+            case _ => println("shits fack fam (TM)")
+        }
     }
 
     private def processTransactions(): Unit = {
+        //println(this.transactionsQueue.isEmpty)
         // TOO
         // project task 2
         // Function that pops a transaction from the queue
         val transaction: Transaction = transactionsQueue.pop
-        if (transaction.status == TransactionStatus.PENDING) {
-            transactionsQueue.push(transaction)
-            processTransactions()
+        if (transaction.attempt >= transaction.allowedAttemps) {
+            transaction.status = TransactionStatus.FAILED
         } else {
-            // and spawns a thread to execute the transaction.
-            val t = create_thread(() => {
-
-                val result = transaction.from.withdraw(transaction.amount)
-
-                result match {
-                    case Left => {
-
-                        val deposit = transaction.to.deposit(transaction.amount)
-
-                        deposit match {
-                            case Left => transaction.status = TransactionStatus.SUCCESS
-
-                            case Right(string) => {
-                                println(string)
-                                transaction.status = TransactionStatus.FAILED
-                                }
-                        }
-                    }
-
-                    case Right(string) => {
-                        println(string)
-                        transaction.status = TransactionStatus.FAILED
-                        }
-                }
-
-            })
+            if (transaction.status == TransactionStatus.PENDING) {
+                transaction.attempt += 1
+                transactionsQueue.push(transaction)
+                processTransactions()
+            }
         }
         this.processedTransactions.push(transaction)
         // Finally do the appropriate thing, depending on whether

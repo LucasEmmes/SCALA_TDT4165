@@ -76,6 +76,7 @@ class AccountTransferTests extends FunSuite {
 
 
   test("Test 07: Valid transfer between accounts") {
+    println("test7")
     val bank = new Bank()
 
     val acc1 = bank.addAccount(100)
@@ -92,6 +93,7 @@ class AccountTransferTests extends FunSuite {
   }
 
   test("Test 08: Transfer of negative amount between accounts should fail") {
+    println("test8")
     val bank = new Bank()
 
     val acc1 = bank.addAccount(500)
@@ -109,6 +111,7 @@ class AccountTransferTests extends FunSuite {
 
 
   test("Test 09: Invalid transfer between accounts due to insufficient funds should lead to transaction status FAILED and no money should be transferred between accounts") {
+    print("test9")
     val bank = new Bank()
     val acc1 = new Account(bank, 100)
     val acc2 = new Account(bank, 1000)
@@ -126,6 +129,7 @@ class AccountTransferTests extends FunSuite {
 
 
   test("Test 10: Correct balance amounts after several transfers") {
+    print("test10")
     val bank = new Bank()
 
     val acc1 = new Account(bank, 3000)
@@ -152,6 +156,7 @@ class AccountTransferTests extends FunSuite {
   }
 
   test("Test 11: Failed transactions should retry and potentially succeed with multiple allowed attempts") {
+    print("test11")
     var failed = 0
     for (x <- 1 to 100) {
       val bank = new Bank(allowedAttempts = 3)
@@ -164,6 +169,7 @@ class AccountTransferTests extends FunSuite {
       for (j <- 1 to 2) { acc3 transferTo (acc1, 50) }
 
       while (bank.getProcessedTransactionsAsList.size != 8) {
+        println(bank.getProcessedTransactionsAsList.size)
         Thread.sleep(100)
       }
 
@@ -176,6 +182,7 @@ class AccountTransferTests extends FunSuite {
   }
 
   test("Test 12: Some transactions should be stopped with only one allowed attempt") {
+    print("test12")
     var failed = 0
     for (x <- 1 to 100) {
       val bank = new Bank(allowedAttempts = 1)
