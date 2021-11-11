@@ -10,21 +10,36 @@ class TransactionQueue {
     // TODO
     // project task 1.1
     // Add datastructure to contain the transactions
+    var queue = Queue[Transaction]();
 
     // Remove and return the first element from the queue
-    def pop: Transaction = ???
+    def pop: Transaction = {
+        queue.synchonize {
+            return queue.dequeue;
+        }
+    }
 
     // Return whether the queue is empty
-    def isEmpty: Boolean = ???
+    def isEmpty: Boolean = {
+        return queue.length;
+    }
 
     // Add new element to the back of the queue
-    def push(t: Transaction): Unit = ???
+    def push(t: Transaction): Unit = {
+        queue.synchronize {
+            queue.enqueue(t);
+        }
+    }
 
     // Return the first element from the queue without removing it
-    def peek: Transaction = ???
+    def peek: Transaction = {
+        return queue(0);
+    }
 
     // Return an iterator to allow you to iterate over the queue
-    def iterator: Iterator[Transaction] = ???
+    def iterator: Iterator[Transaction] = {
+        return queue.clone();
+    }
 }
 
 class Transaction(val transactionsQueue: TransactionQueue,
