@@ -1,8 +1,19 @@
 import exceptions._
 
+object uidGen extends App {
+    var uidCount = 0L;
+    def getUniqueId: Long = this.synchronized {
+        val freshuid = uidCount + 1;
+        uidCount = freshuid;
+        return freshuid; 
+    }
+}
+
 class Account(val bank: Bank, initialBalance: Double) {
 
     class Balance(var amount: Double) {}
+
+    val uid = uidGen.getUniqueId;
 
     val balance = new Balance(initialBalance)
 
