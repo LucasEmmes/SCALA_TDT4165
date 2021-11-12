@@ -75,6 +75,7 @@ class Bank(val allowedAttempts: Integer = 3) {
         // TOO
         // project task 2
         // Function that pops a transaction from the queue
+        println("queue size", transactionsQueue.iterator.toList.size)
         val transaction: Transaction = transactionsQueue.pop
         if (transaction.status == TransactionStatus.FAILED && transaction.attempt < transaction.allowedAttemps) {
             
