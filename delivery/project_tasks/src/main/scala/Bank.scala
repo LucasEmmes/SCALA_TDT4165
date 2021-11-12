@@ -13,10 +13,6 @@ class Bank(val allowedAttempts: Integer = 3) {
     }
 
     def addTransactionToQueue(from: Account, to: Account, amount: Double): Unit = {
-        // TODO
-        // project task 2
-        // create a new transaction object and put it in the queue
-        // spawn a thread that calls processTransactions
         val transaction = new Transaction(this.transactionsQueue, this.processedTransactions, from, to, amount, this.allowedAttempts)
         transactionsQueue.push(transaction)
         runTransaction(transaction, to, from)
@@ -26,7 +22,6 @@ class Bank(val allowedAttempts: Integer = 3) {
     }
 
     private def runTransaction(transaction: Transaction, to:Account, from:Account):Unit = {
-        transaction.attempt += 1
         val t = create_thread(() => {
             if (from.uid < to.uid) {
                 from.synchronized { to.synchronized{
@@ -42,40 +37,30 @@ class Bank(val allowedAttempts: Integer = 3) {
     }
 
     private def executeTransaction(transaction: Transaction):Unit = {
+        transaction.attempt += 1
         val result = transaction.from.withdraw(transaction.amount)
-        // println("has withdrawn from fom")
+        val result2 = transaction.to.deposit(transaction.amount)
         
-        result match {
-            case Left(()) => {
-                // println("depositing to to")
-                val result2 = transaction.to.deposit(transaction.amount)
-                // println("deposited to to")
-
-                result2 match {
-                    case Left(()) => {
-                        transaction.status = TransactionStatus.SUCCESS
-                        }
-
-                    case Right(string) => {
-                        transaction.status = TransactionStatus.FAILED
-                    }
-                    case _ => println("shits fack fam (TM)")
-                }
-            }
-
-            case Right(string) => {
+        (result, result2) match {
+            case (Left(()), Left(())) => transaction.status = TransactionStatus.SUCCESS
+            case (Left(()), Right(string2)) => {
+                transaction.from.deposit(transaction.amount)
                 transaction.status = TransactionStatus.FAILED
             }
-            case _ => println("shits fack fam (TM)")
+            case (Right(string1), Left(())) => {
+                transaction.to.withdraw(transaction.amount)
+                transaction.status = TransactionStatus.FAILED
+            }
+            case ((Right(string1), Right(string2))) => {
+                transaction.status = TransactionStatus.FAILED
+            }
+            case _ => println("shits facked fam (TM)")
+                
         }
     }
 
     private def processTransactions(): Unit = {
-        //println(this.transactionsQueue.isEmpty)
-        // TOO
-        // project task 2
-        // Function that pops a transaction from the queue
-        println("queue size", transactionsQueue.iterator.toList.size)
+        println(transactionsQueue.iterator.toList.size) //MUY IMPORTANTE!! (REMOVE this for failed test)
         val transaction: Transaction = transactionsQueue.pop
         if (transaction.status == TransactionStatus.FAILED && transaction.attempt < transaction.allowedAttemps) {
             
@@ -84,16 +69,11 @@ class Bank(val allowedAttempts: Integer = 3) {
         }
         if (transaction.status == TransactionStatus.PENDING) {
             transactionsQueue.push(transaction)
-            //Should not be a permanent solution
+            
             processTransactions()
         } else {
-            if (transaction.status == TransactionStatus.FAILED) {
-                //println("transaction failed", transaction.amount)
-            }
             this.processedTransactions.push(transaction)
         }
-        // Finally do the appropriate thing, depending on whether
-        // the transaction succeeded or not
     }
                                                 
 
