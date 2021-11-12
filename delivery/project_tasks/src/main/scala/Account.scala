@@ -20,22 +20,23 @@ class Account(val bank: Bank, initialBalance: Double) {
     // TODO
     // for project task 1.2: implement functions
     // for project task 1.3: change return type and update function bodies
-    def withdraw(amount: Double): Either[Unit, String] = this.synchronized {
-        if (this.getBalanceAmount < amount) {
+    def withdraw(amount: Double): Either[Unit, String] = balance.synchronized {
+        if (balance.amount < amount) {
             return Right("shit fucked yo")
         }
         if (amount < 0) {
             return Right("amount < 0 you stupid fack")
         }
-
-        Left(balance.amount -= amount)
+        balance.amount -= amount
+        Left(())
     }
 
-    def deposit (amount: Double): Either[Unit, String] = this.synchronized {
+    def deposit (amount: Double): Either[Unit, String] = balance.synchronized {
         if (amount < 0) {
             return Right("amount < 0 you stupid fack")
         }
-        Left(balance.amount += amount)
+        balance.amount += amount
+        Left(())
     }
 
     def getBalanceAmount: Double = {

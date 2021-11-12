@@ -37,15 +37,14 @@ class Bank(val allowedAttempts: Integer = 3) {
 
 
     private def executeTransaction(transaction: Transaction):Unit = {
-        println("withdrawing from from")
         val result = transaction.from.withdraw(transaction.amount)
-        println("has withdrawn from fom")
+        // println("has withdrawn from fom")
         
         result match {
             case Left(()) => {
-                println("depositing to to")
+                // println("depositing to to")
                 val result2 = transaction.to.deposit(transaction.amount)
-                println("deposited to to")
+                // println("deposited to to")
 
                 result2 match {
                     case Left(()) => {
@@ -72,16 +71,19 @@ class Bank(val allowedAttempts: Integer = 3) {
         // project task 2
         // Function that pops a transaction from the queue
         val transaction: Transaction = transactionsQueue.pop
-        if (transaction.attempt >= transaction.allowedAttemps) {
-            transaction.status = TransactionStatus.FAILED
-        } else {
-            if (transaction.status == TransactionStatus.PENDING) {
-                transaction.attempt += 1
-                transactionsQueue.push(transaction)
-                processTransactions()
-            }
+        if (transaction.status == TransactionStatus.FAILED && transaction.attempt < transaction.allowedAttemps) {
+            transaction.attempt += 1
+            transaction.status == TransactionStatus.PENDING
         }
-        this.processedTransactions.push(transaction)
+        if (transaction.status == TransactionStatus.PENDING) {
+            transactionsQueue.push(transaction)
+            processTransactions()
+        } else {
+            if (transaction.status == TransactionStatus.FAILED) {
+                println("transaction failed", transaction.amount)
+            }
+            this.processedTransactions.push(transaction)
+        }
         // Finally do the appropriate thing, depending on whether
         // the transaction succeeded or not
     }
