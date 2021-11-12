@@ -169,15 +169,12 @@ class AccountTransferTests extends FunSuite {
       for (j <- 1 to 2) { acc3 transferTo (acc1, 50) }
 
       while (bank.getProcessedTransactionsAsList.size != 8) {
-        println(bank.getProcessedTransactionsAsList.size)
         Thread.sleep(100)
       }
-
       if (!(acc1.getBalanceAmount == 0
         && acc2.getBalanceAmount == 300
         && acc3.getBalanceAmount == 0)) failed += 1
     }
-    println(failed)
     assert(failed <= 5)
 
   }
